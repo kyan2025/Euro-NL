@@ -1,0 +1,151 @@
+import React, { useState } from "react";
+import ReactDOM from "react-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
+import './styles/global.css';
+
+// إعداد i18next
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
+
+// بيانات الترجمة
+const resources = {
+  en: {
+    translation: {
+      welcome: "Welcome to Commodum Copia",
+      best_products: "We offer you the best products at the best prices.",
+      products: "Our Products",
+      view_products: "View Products",
+      add_to_cart: "Add to Cart",
+      cart: "Shopping Cart",
+      apple: "Apple",
+      orange: "Orange",
+      banana: "Banana",
+      currency: "MAD",
+      apple_description: "Fresh and juicy apples.",
+      orange_description: "Citrusy and sweet oranges.",
+      banana_description: "Sweet bananas.",
+    },
+  },
+  nl: {
+    translation: {
+      welcome: "Welkom bij Commodum Copia",
+      best_products: "Wij bieden de beste producten tegen de beste prijzen.",
+      products: "Onze producten",
+      view_products: "Bekijk producten",
+      add_to_cart: "Toevoegen aan winkelwagentje",
+      cart: "Winkelwagentje",
+      apple: "Appel",
+      orange: "Sinaasappel",
+      banana: "Banaan",
+      currency: "MAD",
+      apple_description: "Verse en sappige appels.",
+      orange_description: "Citrusachtige en zoete sinaasappels.",
+      banana_description: "Zoete bananen.",
+    },
+  },
+  ar: {
+    translation: {
+      welcome: "مرحبًا بك في كومودوم كوبيا",
+      best_products: "نقدم لك أفضل المنتجات بأفضل الأسعار.",
+      products: "منتجاتنا",
+      view_products: "عرض المنتجات",
+      add_to_cart: "إضافة إلى السلة",
+      cart: "سلة التسوق",
+      apple: "تفاح",
+      orange: "برتقال",
+      banana: "موز",
+      currency: "درهم",
+      apple_description: "تفاح طازج وعصيري.",
+      orange_description: "برتقال حمضي وحلو.",
+      banana_description: "موز حلو.",
+    },
+  },
+};
+
+// تهيئة i18next
+i18n.use(initReactI18next).init({
+  resources,
+  lng: "en", // اللغة الافتراضية
+  fallbackLng: "en", // اللغة الاحتياطية
+  interpolation: {
+    escapeValue: false,
+  },
+});
+
+function App() {
+  const { t, i18n } = useTranslation(); // استخدام الترجمة
+  const [cart, setCart] = useState([]);
+
+  const addToCart = (product) => {
+    setCart([...cart, { ...product, quantity: 1 }]);
+    alert(`${product.name} ${t('add_to_cart')}!`);
+  };
+
+  const changeLanguage = (lang) => {
+    i18n.changeLanguage(lang);
+  };
+
+  const productList = [
+    { id: 1, name: t('apple'), price: "10", description: t('apple_description'), image: "/images/apple.jpg" },
+    { id: 2, name: t('orange'), price: "8", description: t('orange_description'), image: "/images/orange.jpg" },
+    { id: 3, name: t('banana'), price: "7", description: t('banana_description'), image: "/images/banana.jpg" },
+  ];
+
+  function Home() {
+    return (
+      <div>
+        <h1>{t('welcome')}</h1>
+        <p>{t('best_products')}</p>
+        <img src="/images/store.jpg" alt="متجر كومودوم كوبيا" className="home-image" />
+        <Link to="/products">
+          <button className="view-products-button">{t('view_products')}</button>
+        </Link>
+      </div>
+    );
+  }
+
+  function Products() {
+    return (
+      <div>
+        <h1>{t('products')}</h1>
+        <div className="product-list">
+          {productList.map((product) => (
+            <div key={product.id} className="product-card">
+              <img src={product.image} alt={product.name} className="product-image" />
+              <h2>{product.name}</h2>
+              <p>{product.price} {t('currency')}</p>
+              <button className="details-button" onClick={() => addToCart(product)}>{t('add_to_cart')}</button>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <Router>
+      <div className="container">
+        <nav className="navbar">
+          <Link to="/">الرئيسية</Link>
+          <Link to="/products">{t('products')}</Link>
+          <Link to="/cart">{t('cart')}</Link>
+          
+          {/* زر تغيير اللغة */}
+          <button onClick={() => changeLanguage('en')}>EN</button>
+          <button onClick={() => changeLanguage('nl')}>NL</button>
+          <button onClick={() => changeLanguage('ar')}>AR</button>
+        </nav>
+
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Products />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+}
+
+ReactDOM.render(<App />, document.getElementById("root"));
+
+======================
